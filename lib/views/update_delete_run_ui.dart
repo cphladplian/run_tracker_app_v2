@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class UpdateDeleteRunUi extends StatefulWidget {
-  const UpdateDeleteRunUi({super.key});
+  final Map<String, dynamic> run; //เพิ่มตัวแปร รับข้อมูล
+  const UpdateDeleteRunUi({super.key, required this.run});
 
   @override
   State<UpdateDeleteRunUi> createState() => _UpdateDeleteRunUiState();
