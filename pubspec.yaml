@@ -1,0 +1,39 @@
+name: run_tracker_app_v2
+description: "A new Flutter project."
+
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.2.0 <4.0.0"
+
+dependencies:
+  cupertino_icons: ^1.0.8
+  flutter:
+    sdk: flutter
+  font_awesome_flutter: ^11.0.0
+  google_fonts: ^8.0.2
+  intl: ^0.20.2
+  supabase_flutter: ^2.12.0
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+  icons_launcher: ^3.0.3
+
+icons_launcher:
+  image_path: "assets/icon/tracker.png"
+  platforms:
+    android:
+      enabled: true
+    ios:
+      enabled: true
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icon/
