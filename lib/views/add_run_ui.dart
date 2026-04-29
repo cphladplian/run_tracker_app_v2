@@ -125,21 +125,33 @@ class _AddRunUiState extends State<AddRunUi> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
+            Image.asset(
+              'assets/images/smartwatch.png',
+              height: 150,
+              width: 150,
+              fit: BoxFit.cover,
+            ),
+            const SizedBox(height: 20),
             TextField(
               controller: locationController,
               decoration: const InputDecoration(
                 labelText: 'สถานที่',
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10),
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 15),
             TextField(
               controller: distanceController,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
               decoration: const InputDecoration(
                 labelText: 'ระยะทาง (km)',
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10),
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 15),
@@ -148,7 +160,10 @@ class _AddRunUiState extends State<AddRunUi> {
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
                 labelText: 'จำนวนคน',
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10),
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 25),

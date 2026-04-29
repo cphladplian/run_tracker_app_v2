@@ -154,6 +154,13 @@ class _UpdateDeleteRunUiState extends State<UpdateDeleteRunUi> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
+            Image.asset(
+              'assets/images/fitness.png',
+              height: 150,
+              width: 150,
+              fit: BoxFit.cover,
+            ),
+            const SizedBox(height: 20),
             TextField(
               controller: locationController,
               decoration: const InputDecoration(

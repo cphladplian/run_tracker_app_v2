@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:run_tracker_app_v2/views/add_run_ui.dart';
+import 'package:run_tracker_app_v2/views/login_ui.dart';
 import 'package:run_tracker_app_v2/views/update_delete_run_ui.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -23,13 +24,13 @@ class _ShowAllRunUiState extends State<ShowAllRunUi> {
   Future<void> loadRuns() async {
     final user = Supabase.instance.client.auth.currentUser; //เช็ค user
 
-    if(user == null) {
+    if (user == null) {
       //ยังไม่ login
       setState(() => isLoading = false);
       return;
     }
 
-    try{
+    try {
       final data = await Supabase.instance.client
           .from('runs')
           .select()
@@ -39,7 +40,7 @@ class _ShowAllRunUiState extends State<ShowAllRunUi> {
         //เอาข้อมูลมาเก็บ runs
         runs = List<Map<String, dynamic>>.from(data);
       });
-    }catch (e) {
+    } catch (e) {
       //ถ้ามี error ให้แสดงข้อความ
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -49,7 +50,7 @@ class _ShowAllRunUiState extends State<ShowAllRunUi> {
           backgroundColor: Colors.red,
         ),
       );
-    }finally {
+    } finally {
       //โหลดเสร็จปิด loading
       setState(() => isLoading = false);
     }
@@ -57,11 +58,11 @@ class _ShowAllRunUiState extends State<ShowAllRunUi> {
 
 //------------------ลบข้อมูล
   Future<void> deleteRun(String id) async {
-    try{
+    try {
       await Supabase.instance.client.from('runs').delete().eq('id', id);
       await loadRuns();
-      if(!mounted) return;
-      
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -70,7 +71,7 @@ class _ShowAllRunUiState extends State<ShowAllRunUi> {
           backgroundColor: Colors.green,
         ),
       );
-    }catch (e) {
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -136,68 +137,90 @@ class _ShowAllRunUiState extends State<ShowAllRunUi> {
           IconButton(
             onPressed: () async {
               await Supabase.instance.client.auth.signOut();
-              Navigator.pop(context);
+              if(!mounted) return;
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginUi()),
+                (route) => false,
+              );
             },
             icon: const Icon(Icons.logout, color: Colors.white),
           )
         ],
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator()) //กําลังโหลด
-          : user == null
-              ? const Center(
-                  child: Text(
-                    'กรุณา login ก่อน',
-                  ),
-                )
-              : runs.isEmpty
-                  ? const Center(
-                      child: Text(
-                        'ไม่มีข้อมูล',
-                      ),
-                    )
-                  : ListView.builder(
-                      itemCount: runs.length,
-                      itemBuilder: (context, index) {
-                        final run = runs[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 6),
-                          child: ListTile(
-                            onTap: () async {
-                              final result = await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => UpdateDeleteRunUi(run: run), //ส่งข้อมูล **ต้องไปเพิ่มหน้าตัวแปรหน้า update
+      body: Column(
+        children: [
+          const SizedBox(height: 20),
+          Image.asset(
+            'assets/images/fitness.png',
+            height: 150,
+            width: 150,
+            fit: BoxFit.cover,
+          ),
+          const SizedBox(height: 20),
+          Expanded(
+            child: isLoading
+                ? const Center(child: CircularProgressIndicator()) //กําลังโหลด
+                : user == null
+                    ? const Center(
+                        child: Text(
+                          'กรุณา login ก่อน',
+                        ),
+                      )
+                    : runs.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'ไม่มีข้อมูล',
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: runs.length,
+                            itemBuilder: (context, index) {
+                              final run = runs[index];
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 6),
+                                child: ListTile(
+                                  onTap: () async {
+                                    final result = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => UpdateDeleteRunUi(
+                                            run:
+                                                run), //ส่งข้อมูล **ต้องไปเพิ่มหน้าตัวแปรหน้า update
+                                      ),
+                                    );
+                                    if (result == true) {
+                                      loadRuns();
+                                    }
+                                  },
+                                  leading: const Icon(Icons.directions_run),
+                                  title: Text(
+                                    'สถานที่: ${run['location']}',
+                                  ),
+                                  subtitle: Text(
+                                    'ระยะทาง: ${run['distance']} km | คน: ${run['participants']}',
+                                  ),
+                                  trailing: IconButton(
+                                    icon: const Icon(Icons.delete,
+                                        color: Colors.red),
+                                    onPressed: () {
+                                      confirmDelete(run['id']);
+                                    },
+                                  ),
+                                  tileColor: index.isEven
+                                      ? Colors.blue[50]
+                                      : Colors.blue[100],
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
                                 ),
                               );
-                              if(result == true) {
-                                loadRuns();
-                              }
                             },
-                            leading: const Icon(Icons.directions_run),
-                            title: Text(
-                              'สถานที่: ${run['location']}',
-                            ),
-                            subtitle: Text(
-                              'ระยะทาง: ${run['distance']} km | คน: ${run['participants']}',
-                            ),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () {
-                                confirmDelete(run['id']);
-                              },
-                            ),
-                            tileColor: index.isEven
-                                ? Colors.blue[50]
-                                : Colors.blue[100],
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
                           ),
-                        );
-                      },
-                    ),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFF090359),
         child: const Icon(Icons.add, color: Colors.white),
@@ -212,6 +235,7 @@ class _ShowAllRunUiState extends State<ShowAllRunUi> {
           }
         },
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
